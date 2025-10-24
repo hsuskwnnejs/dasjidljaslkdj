@@ -1,5 +1,6 @@
 import { inspect } from "@xstate/inspect";
 import ReactDOM from "react-dom";
+import UserMediaAdder from "@/settings/components/UserMediaAdder";
 
 import { STATE_CHARTS } from "@/config";
 import "@/config/setupSentry";
