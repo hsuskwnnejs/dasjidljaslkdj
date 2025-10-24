@@ -62,23 +62,30 @@ const MediaService = {
 
     let getMediaLinks;
 
-    const localMediaLinks = await getLocalMediaLinks();
-    if (localMediaLinks.length > 0) {
-      getMediaLinks = async () => localMediaLinks;
-    } else {
-      const estimatedRequiredLinkCount = getEstimatedRequiredLinkCount(
-        gameConfig.gameDuration.max,
-        gameConfig.slideDuration
-      );
+    import { getUserMediaLinks } from "@/features/user-media/userMedia";
 
-      getMediaLinks = () => {
-        return fetchRedditPics({
-          subreddits: gameConfig.subreddits,
-          limit: estimatedRequiredLinkCount,
-          mediaTypes: gameConfig.imageType,
-        });
-      };
-    }
+const userMediaLinks = getUserMediaLinks();
+const localMediaLinks = await getLocalMediaLinks();
+
+if (userMediaLinks.length > 0) {
+  getMediaLinks = async () => userMediaLinks;
+} else if (localMediaLinks.length > 0) {
+  getMediaLinks = async () => localMediaLinks;
+} else {
+  const estimatedRequiredLinkCount = getEstimatedRequiredLinkCount(
+    gameConfig.gameDuration.max,
+    gameConfig.slideDuration
+  );
+
+  getMediaLinks = () => {
+    return fetchRedditPics({
+      subreddits: gameConfig.subreddits,
+      limit: estimatedRequiredLinkCount,
+      mediaTypes: gameConfig.imageType,
+    });
+  };
+}
+
 
     machine = createMediaMachine(getMediaLinks);
     service = interpret(machine);
